@@ -9,20 +9,21 @@ from Read import getUser, getMessage
 from Socket import openSocket, sendMessage
 from Initialize import joinRoom
 from collections import OrderedDict
+from Settings import IDENT, CHANNEL
 
 class SampleApp(tk.Tk):
 
-    alGestemd = []
+    alreadyVoted = []
     voteTestAmount = 0
 
     voteAamount = 0
     voteBamount = 0
     voteCamount = 0
 
-    optieA = ""
-    optieB = ""
-    optieC = ""
-    lol = 0
+    optionA = ""
+    optionB = ""
+    optionC = ""
+    questionUpdated = 0
 
 
     def __init__(self, *args, **kwargs):
@@ -36,11 +37,11 @@ class SampleApp(tk.Tk):
         joinRoom(self.s)
         self.readbuffer = ""
 
-        self.vraaglabel = tk.Label(self, text="", bg="black", 
+        self.questionLabel = tk.Label(self, text="", bg="black", 
                 fg="white", 
                 font="HouseSlant-Regular 15", 
                 anchor="w")
-        self.vraaglabel.pack()
+        self.questionLabel.pack()
 
         self.voteA = tk.Label(self, text="", bg="black", 
                 fg="white", 
@@ -63,17 +64,17 @@ class SampleApp(tk.Tk):
 
 
     def update_tekst(self):
-        resultA = self.optieA+": "+str(self.voteAamount)
-        resultB = self.optieB+": "+str(self.voteBamount)
-        resultC = self.optieC+": "+str(self.voteCamount)
+        resultA = self.optionA+": "+str(self.voteAamount)
+        resultB = self.optionB+": "+str(self.voteBamount)
+        resultC = self.optionC+": "+str(self.voteCamount)
 
-        devraagtekst = str(self.lol)
+        theQuestiontekst = str(self.questionUpdated)
 
         self.voteA.configure(text=resultA)
         self.voteB.configure(text=resultB)
         self.voteC.configure(text=resultC)
 
-        self.vraaglabel.configure(text=devraagtekst)
+        self.questionLabel.configure(text=theQuestiontekst)
 
         print("updated tekst!")
 
@@ -112,39 +113,42 @@ class SampleApp(tk.Tk):
                 break
 
 
-            if "!options" in message:
+            if "!options" in message and user == CHANNEL:
 
 
 
 
 
+                # Setting up the question/options to vote on
+                # This is a bit of a work in progress
 
-                devraag = message.split('? ', 1)[0]+"?"
-                devraag2 = devraag.replace("!options", "")
+                theQuestion = message.split('? ', 1)[0]+"?"
+                theQuestion2 = theQuestion.replace("!options", "")
 
-                deopties = message.split('? ', 1)[1]
+                theOptions = message.split('? ', 1)[1]
 
-                a = deopties.split(' ', 4)[0]
-                b = deopties.split(' ', 4)[1]
-                c = deopties.split(' ', 4)[2]
+                a = theOptions.split(' ', 4)[0]
+                b = theOptions.split(' ', 4)[1]
+                c = theOptions.split(' ', 4)[2]
                 
 
                 sendMessage(self.s, "Vote with: !"+str(a)+" !"+str(b)+" !"+str(c))
 
-                self.lol = str(devraag2)
-                self.optieA = str(a)
-                self.optieB = str(b)
-                self.optieC = str(c)
+                self.questionUpdated = str(theQuestion2)
+                self.optionA = str(a)
+                self.optionB = str(b)
+                self.optionC = str(c)
 
-                if "leeg" in self.optieA:
-                    self.optieA = " "
+                # create empty options, needs a fix
+                if "empty" in self.optionA:
+                    self.optionA = " "
 
 
                 self.voteAamount = 0
                 self.voteBamount = 0
                 self.voteCamount = 0
 
-                self.alGestemd = []
+                self.alreadyVoted = []
 
 
                 self.update_tekst()
@@ -155,8 +159,8 @@ class SampleApp(tk.Tk):
 
 
 
-
-            if "!"+self.optieA in message and user != "appie_bot":
+                #to do: Wrap if statements in separate functions
+            if "!"+self.optionA in message and user != IDENT:
                 self.voteAamount += 1
                 print(self.voteAamount)
                 self.update_tekst() 
@@ -164,7 +168,7 @@ class SampleApp(tk.Tk):
                 self.update()
                 break
 
-            if "!"+self.optieB in message and user != "appie_bot":
+            if "!"+self.optionB in message and user != IDENT:
                 self.voteBamount += 1
                 print(self.voteBamount)
                 self.update_tekst() 
@@ -172,7 +176,7 @@ class SampleApp(tk.Tk):
                 self.update()
                 break
 
-            if "!"+self.optieC in message and user != "appie_bot":
+            if "!"+self.optionC in message and user != IDENT:
                 self.voteCamount += 1
                 print(self.voteCamount)
                 self.update_tekst() 
@@ -180,23 +184,23 @@ class SampleApp(tk.Tk):
                 self.update()
                 break
 
-            if "!reset" in message:
+            if "!reset" in message and user == CHANNEL:
                 self.voteAamount = 0
                 self.voteBamount = 0
                 self.voteCamount = 0
 
-                self.alGestemd = []
+                self.alreadyVoted = []
 
                 self.update_tekst()
                 time.sleep(1)
                 self.update()
 
-            if "!voteTest" in message and user not in self.alGestemd:
+            if "!voteTest" in message and user not in self.alreadyVoted:
                 self.voteTestAmount += 1
-                self.alGestemd.append(user)
+                self.alreadyVoted.append(user)
                 break
 
-            if "!exit" in message and user == "appie_bot_master":
+            if "!exit" in message and user == CHANNEL:
                 exit()
 
 
