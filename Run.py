@@ -60,9 +60,7 @@ class SampleApp(tk.Tk):
 
         self.update_tekst()
         self.get_votes()
-        # self.anderemethod()
-        # self.after(500,self.get_votes)
-        # self.after(500,self.update_tekst)
+
 
     def update_tekst(self):
         resultA = self.optieA+": "+str(self.voteAamount)
@@ -79,10 +77,10 @@ class SampleApp(tk.Tk):
 
         print("updated tekst!")
 
-        # self.after(500, self.update_tekst)
+
 
     def get_votes(self):
-        # print "About to read"
+
         try:
             chat_data =  self.s.recv(1024)
         except socket.timeout:
@@ -95,7 +93,7 @@ class SampleApp(tk.Tk):
         self.readbuffer = temp.pop() #save the last (possibly incomplete) line for later
         if self.readbuffer == "":
             pass #no further messages in the queue
-            #you should add a sleep time here for the sake of your hot NIC
+
 
         for line in temp:
             print(line)
@@ -113,14 +111,14 @@ class SampleApp(tk.Tk):
                 sendMessage(self.s, "'!voteA','!voteB','!voteC'")
                 break
 
-            #optie toevoegen !optieEen lol
+
             if "!options" in message:
-                #print de laatste optieEen (by default is dat "lol")
-                # print(optieEen)
-                #!opties lol1 lol2 lol3
-                #a = de message, split de message, de delimiter is een spatie, en we splitten het 1 keer, en dan willen we het tweede list item hebben
-                #want dat is het woord dat we nodig hebben, dus:
-                # !optieEen lol, dan is lol [1]
+
+
+
+
+
+
                 devraag = message.split('? ', 1)[0]+"?"
                 devraag2 = devraag.replace("!options", "")
 
@@ -130,9 +128,9 @@ class SampleApp(tk.Tk):
                 b = deopties.split(' ', 4)[1]
                 c = deopties.split(' ', 4)[2]
                 
-                #post het nog ff in de chat, niet vergeten nog een string te maken van 'a'
+
                 sendMessage(self.s, "Vote with: !"+str(a)+" !"+str(b)+" !"+str(c))
-                #sla de nieuwe optie op in 'optieEen'
+
                 self.lol = str(devraag2)
                 self.optieA = str(a)
                 self.optieB = str(b)
@@ -153,8 +151,8 @@ class SampleApp(tk.Tk):
                 time.sleep(1)
                 self.update()
                 break
-                #print het ff om te checken
-                # print(optieEen)
+
+
 
 
 
